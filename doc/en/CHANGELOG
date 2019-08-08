@@ -1,0 +1,2 @@
+* BUG#8586 Fix signer data's informations sent to universign 
+- FEA#6685 support of url-success, url-fail and url-cancel configuration for Universign callbacks
