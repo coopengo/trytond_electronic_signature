@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!-- This file is part of Coog.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="signature_configuration_view_form">
+            <field name="model">document.signature.configuration</field>
+            <field name="type">form</field>
+            <field name="name">signature_configuration_form</field>
+        </record>
+        <record model="ir.ui.view" id="signature_configuration_view_list">
+            <field name="model">document.signature.configuration</field>
+            <field name="type">tree</field>
+            <field name="name">signature_configuration_list</field>
+        </record>
+        <record model="ir.ui.view" id="signature_credential_view_form">
+            <field name="model">document.signature.credential</field>
+            <field name="type">form</field>
+            <field name="name">signature_credential_form</field>
+        </record>
+        <record model="ir.ui.view" id="signature_credential_view_list">
+            <field name="model">document.signature.credential</field>
+            <field name="type">tree</field>
+            <field name="name">signature_credential_list</field>
+        </record>
+            <record model="ir.ui.view" id="signature_view_form">
+            <field name="model">document.signature</field>
+            <field name="type">form</field>
+            <field name="name">signature_form</field>
+        </record>
+        <record model="ir.ui.view" id="signature_view_list">
+            <field name="model">document.signature</field>
+            <field name="type">tree</field>
+            <field name="name">signature_list</field>
+        </record>
+        <record model="ir.ui.view" id="attachment_view_form">
+            <field name="model">ir.attachment</field>
+            <field name="inherit" ref="ir.attachment_view_form"/>
+            <field name="name">attachment_form</field>
+        </record>
+        <record model="ir.ui.view" id="company_view_form">
+            <field name="model">company.company</field>
+            <field name="inherit" ref="company.company_view_form"/>
+            <field name="name">company_form</field>
+        </record>
+    </data>
+</tryton>
