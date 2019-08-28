@@ -13,10 +13,9 @@ this repository contains the full copyright notices and license terms. -->
     <field name="send_email_to_sign"/>
     <label name="send_signed_docs_by_email"/>
     <field name="send_signed_docs_by_email"/>
-    <label name="lang"/>
-    <field name="lang"/>
     <label name="handwritten_signature"/>
     <field name="handwritten_signature"/>
+    <newline/>
     <label name="suffix_url_success"/>
     <field name="suffix_url_success"/>
     <label name="suffix_url_cancel"/>

@@ -7,6 +7,7 @@ import requests
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pyson import Eval
+from trytond.pool import Pool
 from trytond.transaction import Transaction
 
 __all__ = [
@@ -37,6 +38,9 @@ class SignatureCredential(ModelSQL, ModelView):
     prefix_url_success = fields.Char('Prefix URL Success')
     prefix_url_cancel = fields.Char('Prefix URL Cancel')
     prefix_url_fail = fields.Char('Prefix URL Fail')
+    log_execution = fields.Boolean('Log Execution',
+        help='Set temporary the value to True to debug the call')
+    call_back_url = fields.Char('Call Back URL')
 
     @staticmethod
     def default_auth_mode():
@@ -53,8 +57,7 @@ class SignatureCredential(ModelSQL, ModelView):
     def set_password(cls, credentials, name, value):
         if value == '*' * 10:
             return
-        to_write = [[[c], {'password': value}] for c in credentials]
-        cls.write(*to_write)
+        cls.write(credentials, {'password': value})
 
 
 class Signature(ModelSQL, ModelView):
@@ -67,7 +70,6 @@ class Signature(ModelSQL, ModelView):
     attachment = fields.Many2One('ir.attachment', 'Attachment')
     provider_id = fields.Char('Provider ID', readonly=True)
     status = fields.Selection([
-        ('', ''),
         ('issued', 'Issued'),
         ('ready', 'Ready'),
         ('expired', 'Expired'),
@@ -76,6 +78,10 @@ class Signature(ModelSQL, ModelView):
         ('completed', 'Completed'),
         ], 'Status', readonly=True)
     logs = fields.Text('Logs', readonly=True)
+
+    @staticmethod
+    def default_status():
+        return 'issued'
 
     @classmethod
     def headers(cls, provider):
@@ -94,40 +100,58 @@ class Signature(ModelSQL, ModelView):
             return requests.auth.HTTPBasicAuth(username, password)
 
     @classmethod
-    def call_provider(cls, conf, method, data):
+    def call_provider(cls, signature, conf, method, data):
         url = conf['url']
         assert url
         verify = True
+        # ??
         if config_parser.get(conf['provider'], 'no_verify') == '1':
             verify = False
         provider_method = cls.get_methods(conf)[method]
-        data = xmlrpc.client.dumps((data,), provider_method)
+        all_data = xmlrpc.client.dumps((data,), provider_method)
         req = requests.post(url, headers=cls.headers(conf['provider']),
-            auth=cls.auth(conf), data=data,
+            auth=cls.auth(conf), data=all_data,
             verify=verify)
         if req.status_code > 299:
             raise Exception(req.content)
         response, _ = xmlrpc.client.loads(req.content)
+        if conf['log']:
+            signature.append_log(conf, method, data, response)
+            signature.save()
         return response
 
     @classmethod
-    def get_signer_structure(cls, signer):
+    def signer_structure(cls, conf, signer):
         return {
-            'first_name': '',
             'last_name': signer.full_name,
-            'birth_date': '',
             'email': signer.email,
-            'phone': signer.phone,
+            # Should be mobile but strangely we used phone
+            'mobile': signer.mobile or signer.phone,
+            'lang': signer.lang.code if signer.lang else '',
             }
 
     @classmethod
-    def get_transcoded_signer_structure(cls, conf, signer):
-        struct = cls.get_signer_structure(signer)
-        transco = cls.getattr(cls,
-            conf['provider'] + '_transcode_signer_structure')()
+    def signature_position(cls, conf):
+        res = {}
+        for key in ('field_name', 'page', 'coordinate_x', 'coordinate_y'):
+            if key in conf:
+                res[key] = conf[key]
+        return res
+
+    @classmethod
+    def transcode_structure(cls, conf, method, *args):
+        if args:
+            struct = getattr(cls, method)(conf, *args)
+        else:
+            struct = getattr(cls, method)(conf)
+        transco = getattr(cls,
+            conf['provider'] + '_transcode_%s' % method)(conf)
         new_struct = {}
-        for key, value in struct.iteritems():
-            struct[transco[key]] = value
+        for key, value in struct.items():
+            if key in transco:
+                new_struct[transco[key]] = value
+            else:
+                new_struct[key] = value
         return new_struct
 
     @classmethod
@@ -146,8 +170,15 @@ class Signature(ModelSQL, ModelView):
 
     @classmethod
     def get_conf(cls, credential=None, config=None, attachment=None,
-            from_object=None):
-        res = {}
+            from_object=None, extra_data=None):
+        res = extra_data or {}
+        if not credential or not config:
+            company = Pool().get('company.company')(
+                Transaction().context.get('company'))
+            if not credential and company.signature_credentials:
+                credential = company.signature_credentials[0]
+            if not config and company.signature_configurations:
+                config = company.signature_configurations[0]
         provider = credential.provider if credential else config_parser.get(
             'electronic_signature', 'provider')
         res['provider'] = provider
@@ -172,28 +203,41 @@ class Signature(ModelSQL, ModelView):
                 elif from_object:
                     url = cls.format_url(from_object)
                 res['urls'][call] = url
+
+        res['profile'] = config.profile \
+            if config and config.profile else 'default'
+        res['level'] = config.level if config else 'simple'
+        res['send_email_to_sign'] = config.send_email_to_sign \
+            if config else True
+        res['send_signed_docs_by_email'] = config.send_signed_docs_by_email \
+            if config else True
+        res['description'] = config.description if config else ''
+        res['handwritten_signature'] = config.handwritten_signature \
+            if config else 'never'
+        res['log'] = credential.log_execution if credential else False
+        res['call_back_url'] = credential.call_back_url if credential else None
         return res
 
     @classmethod
     def request_transaction(cls, report, attachment=None, from_object=None,
-            credential=None, config=None):
+            credential=None, config=None, extra_data=None):
         signature = cls()
-        conf = cls.get_conf(credential, config, attachment, from_object)
+        conf = cls.get_conf(credential, config, attachment, from_object,
+            extra_data)
         data = cls.get_data_structure(conf, report)
         method = 'init_signature'
-        response = cls.call_provider(conf, method, data)
-        signature.status = 'issued'
-        signature.append_log(method, response)
+        response = cls.call_provider(signature, conf, method, data)
         signature.provider_id = cls.get_provider_id_from_response(conf,
             response)
         signature.attachment = attachment
         signature.save()
 
-    def append_log(self, method, response):
-        self.logs = getattr(self, 'logs', '')
-        self.logs += '%s @ %s\n%s\n\n' % (
-            self.__class__.get_methods()[method],
-            datetime.datetime.utcnow(), response)
+    def append_log(self, conf, method, data, response):
+        if not hasattr(self, 'logs') or not self.logs:
+            self.logs = ''
+        self.logs += '%s @ %s\n%s\n%s\n\n' % (
+            self.__class__.get_methods(conf)[method],
+            datetime.datetime.utcnow(), data, response)
 
     @classmethod
     def get_methods(cls, conf):
@@ -207,11 +251,11 @@ class Signature(ModelSQL, ModelView):
     def update_transaction_info(self):
         method = 'check_status'
         conf = self.__class__.get_conf(credential=self.provider_credential)
-        response = self.__class__.call_provider(conf, method, self.provider_id)
+        response = self.__class__.call_provider(self, conf, method,
+            self.provider_id)
         status = self.__class__.get_status_from_response(conf['provider'],
             response)
         if self.status != status:
-            self.append_log(method, response)
             self.status = status
             self.save()
 
@@ -222,8 +266,8 @@ class Signature(ModelSQL, ModelView):
 
     def get_documents(self):
         conf = self.__class__.get_conf(credential=self.provider_credential)
-        response = self.__class__.call_provider(conf, 'get_signed_document',
-            self.provider_id)
+        response = self.__class__.call_provider(self, conf,
+            'get_signed_document', self.provider_id)
         return self.__class__.get_content_from_response(conf['provider'],
             response)
 
@@ -240,6 +284,7 @@ class SignatureConfiguration(ModelSQL, ModelView):
             ('simple', 'Simple'),
             ('certified', 'Certified'),
             ('advanced', 'Advanced')], 'Level', sort=False)
+    level_string = level.translated('level')
     send_email_to_sign = fields.Boolean('Send an e-mail to sign',
         help='Send an email to first signer to proceed with the electronic '
         'signature')
@@ -249,8 +294,6 @@ class SignatureConfiguration(ModelSQL, ModelView):
         'end of the process')
     description = fields.Char('Description',
         help='Textual description of the meta data for the request')
-    lang = fields.Many2One('ir.lang', 'Lang',
-        help='Page language for the signers')
     handwritten_signature = fields.Selection([
         ('never', 'Never'),
         ('always', 'Always'),
@@ -271,3 +314,14 @@ class SignatureConfiguration(ModelSQL, ModelView):
     @staticmethod
     def default_handwritten_signature():
         return 'never'
+
+    @staticmethod
+    def default_send_email_to_sign():
+        return True
+
+    @staticmethod
+    def default_send_signed_docs_by_email():
+        return True
+
+    def get_rec_name(self, name=None):
+        return '%s [%s]' % (self.profile, self.level_string)
