@@ -215,7 +215,7 @@ class Signature(ModelSQL, ModelView):
         res['handwritten_signature'] = config.handwritten_signature \
             if config else 'never'
         res['log'] = credential.log_execution if credential else False
-        res['call_back_url'] = credential.call_back_url if credential else None
+        res['call_back_url'] = credential.call_back_url if credential else ''
         return res
 
     @classmethod
@@ -297,7 +297,7 @@ class SignatureConfiguration(ModelSQL, ModelView):
     handwritten_signature = fields.Selection([
         ('never', 'Never'),
         ('always', 'Always'),
-        ('touch_interface', 'On Touch Interface')], 'Hanwritten Signature',
+        ('touch_interface', 'On Touch Interface')], 'Handwritten Signature',
         sort=False)
     suffix_url_success = fields.Char('Suffix URL Success')
     suffix_url_cancel = fields.Char('Suffix URL Cancel')

@@ -25,7 +25,7 @@ class Attachment(metaclass=PoolMeta):
                     'invisible': ~Eval('signatures', False)}),
             ]
 
-    def getter_signature(self, name=None):
+    def getter_signature(self, name):
         if len(self.signatures) == 1:
             return self.signatures[0].id
         elif len([s for s in self.signatures if s.status == 'completed']) > 0:

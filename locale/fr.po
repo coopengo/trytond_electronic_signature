@@ -95,7 +95,7 @@ msgid "Description"
 msgstr "Description"
 
 msgctxt "field:document.signature.configuration,handwritten_signature:"
-msgid "Hanwritten Signature"
+msgid "Handwritten Signature"
 msgstr "Signature manuscrite"
 
 msgctxt "field:document.signature.configuration,id:"
