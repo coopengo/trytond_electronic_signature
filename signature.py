@@ -40,7 +40,6 @@ class SignatureCredential(ModelSQL, ModelView):
     prefix_url_fail = fields.Char('Prefix URL Fail')
     log_execution = fields.Boolean('Log Execution',
         help='Set temporary the value to True to debug the call')
-    call_back_url = fields.Char('Call Back URL')
 
     @staticmethod
     def default_auth_mode():
@@ -103,15 +102,10 @@ class Signature(ModelSQL, ModelView):
     def call_provider(cls, signature, conf, method, data):
         url = conf['url']
         assert url
-        verify = True
-        # ??
-        if config_parser.get(conf['provider'], 'no_verify') == '1':
-            verify = False
         provider_method = cls.get_methods(conf)[method]
         all_data = xmlrpc.client.dumps((data,), provider_method)
         req = requests.post(url, headers=cls.headers(conf['provider']),
-            auth=cls.auth(conf), data=all_data,
-            verify=verify)
+            auth=cls.auth(conf), data=all_data)
         if req.status_code > 299:
             raise Exception(req.content)
         response, _ = xmlrpc.client.loads(req.content)
@@ -133,7 +127,7 @@ class Signature(ModelSQL, ModelView):
     @classmethod
     def signature_position(cls, conf):
         res = {}
-        for key in ('field_name', 'page', 'coordinate_x', 'coordinate_y'):
+        for key in ('page', 'coordinate_x', 'coordinate_y'):
             if key in conf:
                 res[key] = conf[key]
         return res
@@ -199,7 +193,7 @@ class Signature(ModelSQL, ModelView):
                 url = config_parser.get(provider, '%s-url' % call)
             if url is not None:
                 if attachment and '{att.' in url:
-                    url.format(att=attachment)
+                    url = url.format(att=attachment)
                 elif from_object:
                     url = cls.format_url(from_object)
                 res['urls'][call] = url
@@ -211,11 +205,9 @@ class Signature(ModelSQL, ModelView):
             if config else True
         res['send_signed_docs_by_email'] = config.send_signed_docs_by_email \
             if config else True
-        res['description'] = config.description if config else ''
         res['handwritten_signature'] = config.handwritten_signature \
             if config else 'never'
         res['log'] = credential.log_execution if credential else False
-        res['call_back_url'] = credential.call_back_url if credential else ''
         return res
 
     @classmethod
@@ -292,8 +284,6 @@ class SignatureConfiguration(ModelSQL, ModelView):
         'Send signed documents by e-mail',
         help='Send an e-mail to each signer with the signed documents at the '
         'end of the process')
-    description = fields.Char('Description',
-        help='Textual description of the meta data for the request')
     handwritten_signature = fields.Selection([
         ('never', 'Never'),
         ('always', 'Always'),

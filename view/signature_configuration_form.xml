@@ -22,7 +22,4 @@ this repository contains the full copyright notices and license terms. -->
     <field name="suffix_url_cancel"/>
     <label name="suffix_url_fail"/>
     <field name="suffix_url_fail"/>
-    <newline/>
-    <label name="description"/>
-    <field name="description" colspan="3"/>
 </form>
