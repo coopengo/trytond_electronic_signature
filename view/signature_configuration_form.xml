@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- This file is part of Coog.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<form>
+    <label name="company"/>
+    <field name="company"/>
+    <newline/>
+    <label name="profile"/>
+    <field name="profile"/>
+    <label name="level"/>
+    <field name="level"/>
+    <label name="send_email_to_sign"/>
+    <field name="send_email_to_sign"/>
+    <label name="send_signed_docs_by_email"/>
+    <field name="send_signed_docs_by_email"/>
+    <label name="handwritten_signature"/>
+    <field name="handwritten_signature"/>
+    <newline/>
+    <label name="suffix_url_success"/>
+    <field name="suffix_url_success"/>
+    <label name="suffix_url_cancel"/>
+    <field name="suffix_url_cancel"/>
+    <label name="suffix_url_fail"/>
+    <field name="suffix_url_fail"/>
+</form>

@@ -1,0 +1,317 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:company.company,signature_configurations:"
+msgid "Configurations"
+msgstr "Configurations"
+
+msgctxt "field:company.company,signature_credentials:"
+msgid "Credentials"
+msgstr "Authentifications"
+
+msgctxt "field:document.signature,attachment:"
+msgid "Attachment"
+msgstr "Pièce jointe"
+
+msgctxt "field:document.signature,create_date:"
+msgid "Create Date"
+msgstr "Date de Création"
+
+msgctxt "field:document.signature,create_uid:"
+msgid "Create User"
+msgstr "Créé par"
+
+msgctxt "field:document.signature,id:"
+msgid "ID"
+msgstr "Identifiant"
+
+msgctxt "field:document.signature,logs:"
+msgid "Logs"
+msgstr "Traces"
+
+msgctxt "field:document.signature,provider_credential:"
+msgid "Provider Credential"
+msgstr "Authentification du fournisseur"
+
+msgctxt "field:document.signature,provider_id:"
+msgid "Provider ID"
+msgstr "ID Fournisseur"
+
+msgctxt "field:document.signature,rec_name:"
+msgid "Record Name"
+msgstr "Nom de l'enregistrement"
+
+msgctxt "field:document.signature,status:"
+msgid "Status"
+msgstr "Statut"
+
+msgctxt "selection:document.signature,status:"
+msgid "Canceled"
+msgstr "Annulée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Completed"
+msgstr "Réussie"
+
+msgctxt "selection:document.signature,status:"
+msgid "Expired"
+msgstr "Expirée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Failed"
+msgstr "Rejetée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Issued"
+msgstr "Lancée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Ready"
+msgstr "Prête"
+
+msgctxt "field:document.signature,write_date:"
+msgid "Write Date"
+msgstr "Modifié par"
+
+msgctxt "field:document.signature,write_uid:"
+msgid "Write User"
+msgstr "Modifié par"
+
+msgctxt "field:document.signature.configuration,company:"
+msgid "Company"
+msgstr "Société"
+
+msgctxt "field:document.signature.configuration,create_date:"
+msgid "Create Date"
+msgstr "Date de Création"
+
+msgctxt "field:document.signature.configuration,create_uid:"
+msgid "Create User"
+msgstr "Créé par"
+
+msgctxt "field:document.signature.configuration,handwritten_signature:"
+msgid "Handwritten Signature"
+msgstr "Signature manuscrite"
+
+msgctxt "field:document.signature.configuration,id:"
+msgid "ID"
+msgstr "Identifiant"
+
+msgctxt "field:document.signature.configuration,level:"
+msgid "Level"
+msgstr "Niveau"
+
+msgctxt "field:document.signature.configuration,profile:"
+msgid "Profile"
+msgstr "Profile"
+
+msgctxt "field:document.signature.configuration,rec_name:"
+msgid "Record Name"
+msgstr "Nom de l'enregistrement"
+
+msgctxt "field:document.signature.configuration,send_email_to_sign:"
+msgid "Send an e-mail to sign"
+msgstr "Envoyer un mail pour signer"
+
+msgctxt "field:document.signature.configuration,send_signed_docs_by_email:"
+msgid "Send signed documents by e-mail"
+msgstr "Envoyer les documents signés par mail"
+
+msgctxt "field:document.signature.configuration,suffix_url_cancel:"
+msgid "Suffix URL Cancel"
+msgstr "Suffixe de l'URL d'annulation"
+
+msgctxt "field:document.signature.configuration,suffix_url_fail:"
+msgid "Suffix URL Fail"
+msgstr "Suffixe de l'URL d'échec"
+
+msgctxt "field:document.signature.configuration,suffix_url_success:"
+msgid "Suffix URL Success"
+msgstr "Suffixe de l'URL de succès"
+
+msgctxt "field:document.signature.configuration,write_date:"
+msgid "Write Date"
+msgstr "Modifié par"
+
+msgctxt "field:document.signature.configuration,write_uid:"
+msgid "Write User"
+msgstr "Modifié par"
+
+msgctxt "field:document.signature.credential,auth_mode:"
+msgid "Authentication Mode"
+msgstr "Mode d'authentification"
+
+msgctxt "field:document.signature.credential,company:"
+msgid "Company"
+msgstr "Société"
+
+msgctxt "field:document.signature.credential,create_date:"
+msgid "Create Date"
+msgstr "Date de Création"
+
+msgctxt "field:document.signature.credential,create_uid:"
+msgid "Create User"
+msgstr "Créé par"
+
+msgctxt "field:document.signature.credential,displayed_password:"
+msgid "Password"
+msgstr "Mot de passe"
+
+msgctxt "field:document.signature.credential,id:"
+msgid "ID"
+msgstr "Identifiant"
+
+msgctxt "field:document.signature.credential,log_execution:"
+msgid "Log Execution"
+msgstr "Tracer l'exécution"
+
+msgctxt "field:document.signature.credential,password:"
+msgid "Password"
+msgstr "Mot de passe"
+
+msgctxt "field:document.signature.credential,prefix_url_cancel:"
+msgid "Prefix URL Cancel"
+msgstr "Préfixe de l'URL d'annulation"
+
+msgctxt "field:document.signature.credential,prefix_url_fail:"
+msgid "Prefix URL Fail"
+msgstr "Préfixe de l'URL d'échec"
+
+msgctxt "field:document.signature.credential,prefix_url_success:"
+msgid "Prefix URL Success"
+msgstr "Préfixe de l'URL de succès"
+
+msgctxt "field:document.signature.credential,provider:"
+msgid "Provider"
+msgstr "Fournisseur"
+
+msgctxt "field:document.signature.credential,provider_url:"
+msgid "Provider URL"
+msgstr "URL du fournisseur"
+
+msgctxt "field:document.signature.credential,rec_name:"
+msgid "Record Name"
+msgstr "Nom de l'enregistrement"
+
+msgctxt "field:document.signature.credential,username:"
+msgid "User Name"
+msgstr "Nom de l'utilisateur"
+
+msgctxt "field:document.signature.credential,write_date:"
+msgid "Write Date"
+msgstr "Modifié par"
+
+msgctxt "field:document.signature.credential,write_uid:"
+msgid "Write User"
+msgstr "Modifié par"
+
+msgctxt "field:ir.attachment,signature:"
+msgid "Signature"
+msgstr "Signature"
+
+msgctxt "field:ir.attachment,signatures:"
+msgid "Signatures"
+msgstr "Signatures"
+
+msgctxt "help:document.signature.configuration,description:"
+msgid "Textual description of the meta data for the request"
+msgstr "Description textuelle des meta data de la demande"
+
+msgctxt "help:document.signature.configuration,send_email_to_sign:"
+msgid "Send an email to first signer to proceed with the electronic signature"
+msgstr ""
+"Envoyer un mail au premier signataire pour initier le processus de signature"
+" électronique"
+
+msgctxt "help:document.signature.configuration,send_signed_docs_by_email:"
+msgid ""
+"Send an e-mail to each signer with the signed documents at the end of the "
+"process"
+msgstr ""
+"Envoyer un mail à chaque signataire avec les documents signés à la fin du "
+"processus"
+
+msgctxt "help:document.signature.credential,log_execution:"
+msgid "Set temporary the value to True to debug the call"
+msgstr "Positionner temporaire la valeur à Vraie pour déboguer les appels"
+
+msgctxt "model:document.signature,name:"
+msgid "Signature"
+msgstr "Signature"
+
+msgctxt "model:document.signature.configuration,name:"
+msgid "Signature Configuration"
+msgstr "Configuration du service de signature"
+
+msgctxt "model:document.signature.credential,name:"
+msgid "Signature Credential"
+msgstr "Authentification du service de signature"
+
+msgctxt "selection:document.signature,status:"
+msgid "Canceled"
+msgstr "Annulée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Completed"
+msgstr "Réussie"
+
+msgctxt "selection:document.signature,status:"
+msgid "Expired"
+msgstr "Expirée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Failed"
+msgstr "Rejetée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Issued"
+msgstr "Lancée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Ready"
+msgstr "Prête"
+
+msgctxt "selection:document.signature.configuration,handwritten_signature:"
+msgid "Always"
+msgstr "Toujours"
+
+msgctxt "selection:document.signature.configuration,handwritten_signature:"
+msgid "Never"
+msgstr "Jamais"
+
+msgctxt "selection:document.signature.configuration,handwritten_signature:"
+msgid "On Touch Interface"
+msgstr "Sur les interfaces tactiles"
+
+msgctxt "selection:document.signature.configuration,level:"
+msgid "Advanced"
+msgstr "Avancé"
+
+msgctxt "selection:document.signature.configuration,level:"
+msgid "Certified"
+msgstr "Certifié"
+
+msgctxt "selection:document.signature.configuration,level:"
+msgid "Simple"
+msgstr "Simple"
+
+msgctxt "selection:document.signature.credential,auth_mode:"
+msgid "Basic"
+msgstr "Basique"
+
+msgctxt "selection:document.signature.credential,provider:"
+msgid ""
+msgstr " "
+
+msgctxt "view:company.company:"
+msgid "Electronic Signature"
+msgstr "Signature électronique"
+
+msgctxt "view:ir.attachment:"
+msgid "Electronic Signature"
+msgstr "Signature électronique"
+
+msgctxt "view:ir.attachment:"
+msgid "Update Info"
+msgstr "Mise à jour des informations"
