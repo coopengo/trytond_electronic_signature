@@ -13,4 +13,4 @@ def register():
         signature.SignatureConfiguration,
         attachment.Attachment,
         company.Company,
-        module='cryptolog', type_='model')
+        module='electronic_signature', type_='model')
