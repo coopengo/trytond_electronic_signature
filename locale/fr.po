@@ -51,6 +51,10 @@ msgid "Canceled"
 msgstr "Annulée"
 
 msgctxt "selection:document.signature,status:"
+msgid "Pending Validation"
+msgstr "En attente de validation"
+
+msgctxt "selection:document.signature,status:"
 msgid "Completed"
 msgstr "Réussie"
 
