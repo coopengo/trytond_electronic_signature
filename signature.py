@@ -4,8 +4,10 @@ import datetime
 import xmlrpc.client
 import requests
 
+from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields
+from trytond.model.exceptions import UserError
 from trytond.pyson import Eval
 from trytond.pool import Pool
 from trytond.transaction import Transaction
@@ -239,8 +241,9 @@ class Signature(ModelSQL, ModelView):
             ]
         signatures = cls.search(domain)
         if len(signatures) != 1:
-            # TODO raise not found error
-            raise
+            raise UserError(gettext(
+                    'electronic_signature.msg_unknown_signature',
+                    provider_id=provider_id, provider=provider))
         signature = signatures[0]
         new_status = getattr(cls, provider + '_transcode_status')()[
             provider_status]
