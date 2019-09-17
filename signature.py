@@ -4,8 +4,10 @@ import datetime
 import xmlrpc.client
 import requests
 
+from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields
+from trytond.model.exceptions import UserError
 from trytond.pyson import Eval
 from trytond.pool import Pool
 from trytond.transaction import Transaction
@@ -75,6 +77,7 @@ class Signature(ModelSQL, ModelView):
         ('canceled', 'Canceled'),
         ('failed', 'Failed'),
         ('completed', 'Completed'),
+        ('pending_validation', 'Pending Validation'),
         ], 'Status', readonly=True)
     logs = fields.Text('Logs', readonly=True)
 
@@ -223,6 +226,33 @@ class Signature(ModelSQL, ModelView):
             response)
         signature.attachment = attachment
         signature.save()
+
+    def notify_signature_complete(self):
+        # TODO Trigger an event
+        pass
+
+    @classmethod
+    def call_back(cls, provider, provider_id, signer_id, provider_status):
+        domain = [
+            [('provider_id', '=', provider_id)],
+            ['OR',
+                [('provider_credential', '=', None)],
+                [('provider_credential.provider', '=', provider)]]
+            ]
+        signatures = cls.search(domain)
+        if len(signatures) != 1:
+            raise UserError(gettext(
+                    'electronic_signature.msg_unknown_signature',
+                    provider_id=provider_id, provider=provider))
+        signature = signatures[0]
+        new_status = getattr(cls, provider + '_transcode_status')()[
+            provider_status]
+        if (signature.status in ['issued', 'ready', 'pending_validation']
+                and new_status == 'completed'):
+            signature.notify_signature_complete()
+        if signature.status != new_status:
+            signature.status = new_status
+            signature.save()
 
     def append_log(self, conf, method, data, response):
         if not hasattr(self, 'logs') or not self.logs:

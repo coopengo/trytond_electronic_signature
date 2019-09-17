@@ -46,9 +46,18 @@ msgctxt "field:document.signature,status:"
 msgid "Status"
 msgstr "Statut"
 
+msgctxt "model:ir.message,text:msg_unknown_signature"
+msgid "Could not find signature %(provider_id)s for %(provider)s"
+msgstr ""
+"Impossible de retrouver la signature %(provider_id)s pour %(provider)s"
+
 msgctxt "selection:document.signature,status:"
 msgid "Canceled"
 msgstr "Annulée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Pending Validation"
+msgstr "En attente de validation"
 
 msgctxt "selection:document.signature,status:"
 msgid "Completed"
