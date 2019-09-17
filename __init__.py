@@ -4,6 +4,7 @@ from trytond.pool import Pool
 from . import signature
 from . import attachment
 from . import company
+from . import routes
 
 
 def register():
