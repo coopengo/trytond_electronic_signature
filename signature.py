@@ -7,7 +7,7 @@ import requests
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields
-from trytond.model.exceptions import UserError
+from trytond.exceptions import UserError
 from trytond.pyson import Eval
 from trytond.pool import Pool
 from trytond.transaction import Transaction
