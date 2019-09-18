@@ -1,5 +1,6 @@
 # This file is part of Coog. The COPYRIGHT file at the top level of
 # this repository contains the full copyright notices and license terms.
+from werkzeug.exceptions import BadRequest
 import datetime
 import xmlrpc.client
 import requests
@@ -7,7 +8,6 @@ import requests
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields
-from trytond.exceptions import UserError
 from trytond.pyson import Eval
 from trytond.pool import Pool
 from trytond.transaction import Transaction
@@ -241,7 +241,7 @@ class Signature(ModelSQL, ModelView):
             ]
         signatures = cls.search(domain)
         if len(signatures) != 1:
-            raise UserError(gettext(
+            raise BadRequest(gettext(
                     'electronic_signature.msg_unknown_signature',
                     provider_id=provider_id, provider=provider))
         signature = signatures[0]
