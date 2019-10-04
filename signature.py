@@ -128,12 +128,8 @@ class Signature(ModelSQL, ModelView):
             }
 
     @classmethod
-    def signature_position(cls, conf):
-        res = {}
-        for key in ('page', 'coordinate_x', 'coordinate_y'):
-            if key in conf:
-                res[key] = conf[key]
-        return res
+    def signature_position(cls, conf, coordinate):
+        return coordinate
 
     @classmethod
     def transcode_structure(cls, conf, method, *args):
@@ -198,7 +194,7 @@ class Signature(ModelSQL, ModelView):
                 if attachment and '{att.' in url:
                     url = url.format(att=attachment)
                 elif from_object:
-                    url = cls.format_url(from_object)
+                    url = cls.format_url(url, from_object)
                 res['urls'][call] = url
 
         res['profile'] = config.profile \
