@@ -49,7 +49,7 @@ msgstr "Statut"
 msgctxt "model:ir.message,text:msg_unauthorized_transition"
 msgid "Could not change status to %(status)s for signature %(provider_id)s of %(provider)s"
 msgstr ""
-"Impossible de changer le status à %(status)s pour la signature %(provider_id)s de %(provider)s"
+"Impossible de changer le statut à %(status)s pour la signature %(provider_id)s de %(provider)s"
 
 msgctxt "model:ir.message,text:msg_unknown_signature"
 msgid "Could not find signature %(provider_id)s for %(provider)s"
