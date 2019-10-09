@@ -7,7 +7,7 @@ import requests
 
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
-from trytond.model import ModelSQL, ModelView, fields
+from trytond.model import ModelSQL, ModelView, fields, Workflow
 from trytond.pyson import Eval
 from trytond.pool import Pool
 from trytond.transaction import Transaction
@@ -61,10 +61,11 @@ class SignatureCredential(ModelSQL, ModelView):
         cls.write(credentials, {'password': value})
 
 
-class Signature(ModelSQL, ModelView):
+class Signature(Workflow, ModelSQL, ModelView):
     'Signature'
 
     __name__ = 'document.signature'
+    _transition_state = 'status'
 
     provider_credential = fields.Many2One('document.signature.credential',
         'Provider Credential', readonly=True)
@@ -81,9 +82,64 @@ class Signature(ModelSQL, ModelView):
         ], 'Status', readonly=True)
     logs = fields.Text('Logs', readonly=True)
 
+    @classmethod
+    def __setup__(cls):
+        super(Signature, cls).__setup__()
+        cls._transitions |= set((
+                ('issued', 'ready'),
+                ('issued', 'expired'),
+                ('issued', 'canceled'),
+                ('issued', 'failed'),
+                ('issued', 'completed'),
+                ('issued', 'pending_validation'),
+                ('ready', 'expired'),
+                ('ready', 'canceled'),
+                ('ready', 'failed'),
+                ('ready', 'completed'),
+                ('ready', 'pending_validation'),
+                ('pending_validation', 'expired'),
+                ('pending_validation', 'canceled'),
+                ('pending_validation', 'failed'),
+                ('pending_validation', 'completed'),
+                ))
+
     @staticmethod
     def default_status():
         return 'issued'
+
+    @classmethod
+    @Workflow.transition('ready')
+    def set_status_ready(cls, signatures):
+        pass
+
+    @classmethod
+    @Workflow.transition('expired')
+    def set_status_expired(cls, signatures):
+        for signature in signatures:
+            signature.notify_signature_failed()
+
+    @classmethod
+    @Workflow.transition('canceled')
+    def set_status_canceled(cls, signatures):
+        for signature in signatures:
+            signature.notify_signature_failed()
+
+    @classmethod
+    @Workflow.transition('failed')
+    def set_status_failed(cls, signatures):
+        for signature in signatures:
+            signature.notify_signature_failed()
+
+    @classmethod
+    @Workflow.transition('completed')
+    def set_status_completed(cls, signatures):
+        for signature in signatures:
+            signature.notify_signature_completed()
+
+    @classmethod
+    @Workflow.transition('pending_validation')
+    def set_status_pending_validation(cls, signatures):
+        pass
 
     @classmethod
     def headers(cls, provider):
@@ -223,7 +279,11 @@ class Signature(ModelSQL, ModelView):
         signature.attachment = attachment
         signature.save()
 
-    def notify_signature_complete(self):
+    def notify_signature_completed(self):
+        # TODO Trigger an event
+        pass
+
+    def notify_signature_failed(self):
         # TODO Trigger an event
         pass
 
@@ -243,11 +303,14 @@ class Signature(ModelSQL, ModelView):
         signature = signatures[0]
         new_status = getattr(cls, provider + '_transcode_status')()[
             provider_status]
-        if (signature.status in ['issued', 'ready', 'pending_validation']
-                and new_status == 'completed'):
-            signature.notify_signature_complete()
+        transition = (signature.status, new_status)
+        if transition not in cls._transitions:
+            raise BadRequest(gettext(
+                    'electronic_signature.msg_unauthorized_transition',
+                    provider_id=provider_id, provider=provider,
+                    status=new_status))
         if signature.status != new_status:
-            signature.status = new_status
+            getattr(cls, 'set_status_%s' % new_status)([signature])
             signature.save()
 
     def append_log(self, conf, method, data, response):

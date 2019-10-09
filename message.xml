@@ -4,5 +4,8 @@
         <record model="ir.message" id="msg_unknown_signature">
             <field name="text">Could not find signature %(provider_id)s for %(provider)s</field>
         </record>
+        <record model="ir.message" id="msg_unauthorized_transition">
+            <field name="text">Could not change status to %(status)s for signature %(provider_id)s of %(provider)s</field>
+        </record>
     </data>
 </tryton>
