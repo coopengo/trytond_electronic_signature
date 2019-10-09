@@ -115,22 +115,26 @@ class Signature(Workflow, ModelSQL, ModelView):
     @classmethod
     @Workflow.transition('expired')
     def set_status_expired(cls, signatures):
-        pass
+        for signature in signatures:
+            signature.notify_signature_failed()
 
     @classmethod
     @Workflow.transition('canceled')
     def set_status_canceled(cls, signatures):
-        pass
+        for signature in signatures:
+            signature.notify_signature_failed()
 
     @classmethod
     @Workflow.transition('failed')
     def set_status_failed(cls, signatures):
-        pass
+        for signature in signatures:
+            signature.notify_signature_failed()
 
     @classmethod
     @Workflow.transition('completed')
     def set_status_completed(cls, signatures):
-        pass
+        for signature in signatures:
+            signature.notify_signature_completed()
 
     @classmethod
     @Workflow.transition('pending_validation')
@@ -305,11 +309,6 @@ class Signature(Workflow, ModelSQL, ModelView):
                     'electronic_signature.msg_unauthorized_transition',
                     provider_id=provider_id, provider=provider,
                     status=new_status))
-        if (signature.status in ['issued', 'ready', 'pending_validation']
-                and new_status == 'completed'):
-            signature.notify_signature_completed()
-        if new_status in ['expired', 'canceled', 'failed']:
-            signature.notify_signature_failed()
         if signature.status != new_status:
             getattr(cls, 'set_status_%s' % new_status)([signature])
             signature.save()
