@@ -241,7 +241,9 @@ class Signature(Workflow, ModelSQL, ModelView):
                 if credential else config_parser.get(provider, 'url'))
         res['urls'] = {}
         for call in ['success', 'fail', 'cancel']:
-            if credential and config:
+            if (credential and config
+                    and getattr(credential, 'prefix_url_%s' % call)
+                    and getattr(config, 'suffix_url_%s' % call)):
                 url = getattr(credential, 'prefix_url_%s' % call) + getattr(
                     config, 'suffix_url_%s' % call)
             else:
