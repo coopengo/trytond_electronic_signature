@@ -221,9 +221,11 @@ class Signature(Workflow, ModelSQL, ModelView):
     def get_conf(cls, credential=None, config=None, attachment=None,
             from_object=None, extra_data=None):
         res = extra_data or {}
-        if not credential or not config:
-            company = Pool().get('company.company')(
-                Transaction().context.get('company'))
+        if Transaction().context.get('company') and (not credential
+                or not config):
+            # Could be none when called by call-back
+            Company = Pool().get('company.company')
+            company = Company(Transaction().context.get('company'))
             if not credential and company.signature_credentials:
                 credential = company.signature_credentials[0]
             if not config and company.signature_configurations:
@@ -279,11 +281,11 @@ class Signature(Workflow, ModelSQL, ModelView):
         signature.provider_id = cls.get_provider_id_from_response(conf,
             response)
         signature.attachment = attachment
+        signature.provider_credential = credential
         signature.save()
 
     def notify_signature_completed(self):
-        # TODO Trigger an event
-        pass
+        self.attachment.update_with_signed_document(self)
 
     def notify_signature_failed(self):
         # TODO Trigger an event
