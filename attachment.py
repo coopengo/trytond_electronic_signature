@@ -37,3 +37,7 @@ class Attachment(metaclass=PoolMeta):
             if pendings:
                 return pendings[-1].id
             return self.signatures[-1].id if self.signatures else None
+
+    def update_with_signed_document(self, signature):
+        self.data = signature.get_documents()
+        self.save()
