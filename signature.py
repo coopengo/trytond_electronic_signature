@@ -226,8 +226,6 @@ class Signature(Workflow, ModelSQL, ModelView):
             # Could be none when called by call-back
             Company = Pool().get('company.company')
             company = Company(Transaction().context.get('company'))
-            if not credential and company.signature_credentials:
-                credential = company.signature_credentials[0]
             if not config and company.signature_configurations:
                 config = company.signature_configurations[0]
         provider = credential.provider if credential else config_parser.get(
@@ -243,11 +241,11 @@ class Signature(Workflow, ModelSQL, ModelView):
                 if credential else config_parser.get(provider, 'url'))
         res['urls'] = {}
         for call in ['success', 'fail', 'cancel']:
-            if (credential and config
-                    and getattr(credential, 'prefix_url_%s' % call)
-                    and getattr(config, 'suffix_url_%s' % call)):
-                url = getattr(credential, 'prefix_url_%s' % call) + getattr(
-                    config, 'suffix_url_%s' % call)
+            if credential and config and getattr(
+                    credential, 'prefix_url_%s' % call):
+                url = getattr(credential, 'prefix_url_%s' % call)
+                if getattr(config, 'suffix_url_%s' % call):
+                    url += getattr(config, 'suffix_url_%s' % call)
             else:
                 url = config_parser.get(provider, '%s-url' % call)
             if url is not None:
@@ -273,6 +271,12 @@ class Signature(Workflow, ModelSQL, ModelView):
     def request_transaction(cls, report, attachment=None, from_object=None,
             credential=None, config=None, extra_data=None):
         signature = cls()
+        if not credential:
+            Company = Pool().get('company.company')
+            company = Company(Transaction().context.get('company'))
+            if company.signature_credentials:
+                credential = company.signature_credentials[0]
+
         conf = cls.get_conf(credential, config, attachment, from_object,
             extra_data)
         data = cls.get_data_structure(conf, report)
