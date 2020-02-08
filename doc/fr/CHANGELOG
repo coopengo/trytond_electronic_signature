@@ -1,3 +1,4 @@
+* OTH#0000 Force la récupération des autorisations pour l'initialisation de la signature si non défini sur le modèle de document
 * FEA#14406 Récupération automatique du document signé
 * FEA#12653 Ajout d'un point d'entrée dans Coog pour l'appel du call-back
 * BUG#8586 Correctif des données envoyées a universign concernant les informations du signataire

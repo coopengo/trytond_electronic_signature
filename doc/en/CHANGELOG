@@ -1,3 +1,4 @@
+* OTH#0000 Retrieve credential if not defined on document desc.
 * FEA#14406 Automatically retrieve signed document
 * FEA#12653 Add call back coog entry point
 * BUG#8586 Fix signer data's informations sent to universign
