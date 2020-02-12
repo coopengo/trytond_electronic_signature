@@ -9,6 +9,8 @@ this repository contains the full copyright notices and license terms. -->
     <field name="profile"/>
     <label name="level"/>
     <field name="level"/>
+    <label name="manual"/>
+    <field name="manual"/>
     <label name="send_email_to_sign"/>
     <field name="send_email_to_sign"/>
     <label name="send_signed_docs_by_email"/>

@@ -4,11 +4,12 @@ from werkzeug.exceptions import BadRequest
 import datetime
 import xmlrpc.client
 import requests
+from unidecode import unidecode
 
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields, Workflow
-from trytond.pyson import Eval
+from trytond.pyson import Eval, Not, In
 from trytond.pool import Pool
 from trytond.transaction import Transaction
 
@@ -102,10 +103,11 @@ class Signature(Workflow, ModelSQL, ModelView):
                 ('pending_validation', 'failed'),
                 ('pending_validation', 'completed'),
                 ))
-
-    @staticmethod
-    def default_status():
-        return 'issued'
+        cls._buttons.update({
+                'update_transaction_info': {
+                    'invisible': Not(In(Eval('status'),
+                            ['', 'issued', 'ready', 'pending_validation']))}
+                })
 
     @classmethod
     @Workflow.transition('ready')
@@ -170,13 +172,12 @@ class Signature(Workflow, ModelSQL, ModelView):
         response, _ = xmlrpc.client.loads(req.content)
         if conf['log']:
             signature.append_log(conf, method, data, response)
-            signature.save()
         return response
 
     @classmethod
     def signer_structure(cls, conf, signer):
         return {
-            'last_name': signer.full_name,
+            'last_name': unidecode(signer.full_name),
             'email': signer.email,
             # Should be mobile but strangely we used phone
             'mobile': signer.mobile or signer.phone,
@@ -218,27 +219,37 @@ class Signature(Workflow, ModelSQL, ModelView):
         return url
 
     @classmethod
-    def get_conf(cls, credential=None, config=None, attachment=None,
-            from_object=None, extra_data=None):
-        res = extra_data or {}
-        if Transaction().context.get('company') and (not credential
-                or not config):
-            # Could be none when called by call-back
+    def get_authentification(cls, credential=None):
+        conf = {}
+        if not credential:
             Company = Pool().get('company.company')
             company = Company(Transaction().context.get('company'))
-            if not config and company.signature_configurations:
-                config = company.signature_configurations[0]
+            if company.signature_credentials:
+                credential = company.signature_credentials[0]
         provider = credential.provider if credential else config_parser.get(
             'electronic_signature', 'provider')
-        res['provider'] = provider
-        res['auth_mode'] = (credential.auth_mode
+        conf['provider'] = provider
+        conf['auth_mode'] = (credential.auth_mode
                 if credential else config_parser.get(provider, 'auth_mode'))
-        res['username'] = (credential.username
+        conf['username'] = (credential.username
                 if credential else config_parser.get(provider, 'username'))
-        res['password'] = (credential.password
+        conf['password'] = (credential.password
                 if credential else config_parser.get(provider, 'password'))
-        res['url'] = (credential.provider_url
+        conf['url'] = (credential.provider_url
                 if credential else config_parser.get(provider, 'url'))
+        conf['log'] = credential.log_execution if credential else False
+        return conf, credential
+
+    @classmethod
+    def get_conf(cls, credential=None, config=None, attachment=None,
+            from_object=None):
+        res, credential = cls.get_authentification(credential)
+        provider = res['provider']
+        if not config:
+            Company = Pool().get('company.company')
+            company = Company(Transaction().context.get('company'))
+            if company.signature_configurations:
+                config = company.signature_configurations[0]
         res['urls'] = {}
         for call in ['success', 'fail', 'cancel']:
             if credential and config and getattr(
@@ -254,7 +265,6 @@ class Signature(Workflow, ModelSQL, ModelView):
                 elif from_object:
                     url = cls.format_url(url, from_object)
                 res['urls'][call] = url
-
         res['profile'] = config.profile \
             if config and config.profile else 'default'
         res['level'] = config.level if config else 'simple'
@@ -264,29 +274,25 @@ class Signature(Workflow, ModelSQL, ModelView):
             if config else True
         res['handwritten_signature'] = config.handwritten_signature \
             if config else 'never'
-        res['log'] = credential.log_execution if credential else False
-        return res
+        res['manual'] = config.manual if config else False
+        return res, credential
 
     @classmethod
-    def request_transaction(cls, report, attachment=None, from_object=None,
-            credential=None, config=None, extra_data=None):
+    def request_transaction(cls, report, attachment, from_object=None,
+            credential=None, config=None, ignore_manual=True):
+        conf, credential = cls.get_conf(credential, config, attachment,
+            from_object)
+        if ignore_manual and conf['manual']:
+            return
         signature = cls()
-        if not credential:
-            Company = Pool().get('company.company')
-            company = Company(Transaction().context.get('company'))
-            if company.signature_credentials:
-                credential = company.signature_credentials[0]
-
-        conf = cls.get_conf(credential, config, attachment, from_object,
-            extra_data)
         data = cls.get_data_structure(conf, report)
         method = 'init_signature'
         response = cls.call_provider(signature, conf, method, data)
         signature.provider_id = cls.get_provider_id_from_response(conf,
             response)
-        signature.attachment = attachment
+        signature.status = 'issued'
         signature.provider_credential = credential
-        signature.save()
+        return signature
 
     def notify_signature_completed(self):
         self.attachment.update_with_signed_document(self)
@@ -311,15 +317,22 @@ class Signature(Workflow, ModelSQL, ModelView):
         signature = signatures[0]
         new_status = getattr(cls, provider + '_transcode_status')()[
             provider_status]
-        transition = (signature.status, new_status)
-        if transition not in cls._transitions:
+        signature.update_status(new_status)
+
+    def update_status(self, new_status):
+        if new_status == self.status:
+            return
+        transition = (self.status, new_status)
+        if transition not in self.__class__._transitions:
             raise BadRequest(gettext(
                     'electronic_signature.msg_unauthorized_transition',
-                    provider_id=provider_id, provider=provider,
+                    provider_id=self.provider_id,
+                    provider=self.provider_credential.provider
+                    if self.provider_credential else '',
                     status=new_status))
-        if signature.status != new_status:
-            getattr(cls, 'set_status_%s' % new_status)([signature])
-            signature.save()
+        if self.status != new_status:
+            getattr(self.__class__, 'set_status_%s' % new_status)([self])
+            self.save()
 
     def append_log(self, conf, method, data, response):
         if not hasattr(self, 'logs') or not self.logs:
@@ -337,16 +350,16 @@ class Signature(Workflow, ModelSQL, ModelView):
         return getattr(cls, provider + '_get_status_from_response')(
             response)
 
-    def update_transaction_info(self):
+    @classmethod
+    @ModelView.button
+    def update_transaction_info(cls, signatures):
         method = 'check_status'
-        conf = self.__class__.get_conf(credential=self.provider_credential)
-        response = self.__class__.call_provider(self, conf, method,
-            self.provider_id)
-        status = self.__class__.get_status_from_response(conf['provider'],
-            response)
-        if self.status != status:
-            self.status = status
-            self.save()
+        for signature in signatures:
+            conf, _ = cls.get_authentification(signature.provider_credential)
+            response = cls.call_provider(signature, conf, method,
+                signature.provider_id)
+            signature.update_status(cls.get_status_from_response(
+                    conf['provider'], response))
 
     @classmethod
     def get_content_from_response(cls, provider, response):
@@ -354,7 +367,7 @@ class Signature(Workflow, ModelSQL, ModelView):
             response)
 
     def get_documents(self):
-        conf = self.__class__.get_conf(credential=self.provider_credential)
+        conf, _ = self.__class__.get_authentification(self.provider_credential)
         response = self.__class__.call_provider(self, conf,
             'get_signed_document', self.provider_id)
         return self.__class__.get_content_from_response(conf['provider'],
@@ -389,6 +402,9 @@ class SignatureConfiguration(ModelSQL, ModelView):
     suffix_url_success = fields.Char('Suffix URL Success')
     suffix_url_cancel = fields.Char('Suffix URL Cancel')
     suffix_url_fail = fields.Char('Suffix URL Fail')
+    manual = fields.Boolean('Manual',
+        help='If set the electronic process will not be triggered '
+        'automatically when the attachment is created')
 
     @staticmethod
     def default_company():
