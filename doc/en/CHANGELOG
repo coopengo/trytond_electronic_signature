@@ -1,3 +1,4 @@
+* FEA#14763 Allow to call electronic signature provider in two passes
 * OTH#0000 Retrieve credential if not defined on document desc.
 * FEA#14406 Automatically retrieve signed document
 * FEA#12653 Add call back coog entry point
