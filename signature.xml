@@ -43,5 +43,9 @@ this repository contains the full copyright notices and license terms. -->
             <field name="inherit" ref="company.company_view_form"/>
             <field name="name">company_form</field>
         </record>
+        <record model="ir.model.button" id="update_transaction_info">
+            <field name="name">update_transaction_info</field>
+            <field name="model" search="[('model', '=', 'document.signature')]"/>
+        </record>
     </data>
 </tryton>
