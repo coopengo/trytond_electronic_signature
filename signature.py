@@ -136,6 +136,7 @@ class Signature(Workflow, ModelSQL, ModelView):
     @Workflow.transition('completed')
     def set_status_completed(cls, signatures):
         for signature in signatures:
+            signature.status = 'completed'
             signature.notify_signature_completed()
 
     @classmethod
