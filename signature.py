@@ -6,6 +6,7 @@ import xmlrpc.client
 import requests
 from unidecode import unidecode
 
+from trytond import backend
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
 from trytond.model import ModelSQL, ModelView, fields, Workflow
@@ -43,6 +44,8 @@ class SignatureCredential(ModelSQL, ModelView):
     prefix_url_fail = fields.Char('Prefix URL Fail')
     log_execution = fields.Boolean('Log Execution',
         help='Set temporary the value to True to debug the call')
+    configurations = fields.One2Many('document.signature.configuration',
+        'credential', 'Configurations')
 
     @staticmethod
     def default_auth_mode():
@@ -72,6 +75,7 @@ class Signature(Workflow, ModelSQL, ModelView):
         'Provider Credential', readonly=True)
     attachment = fields.Many2One('ir.attachment', 'Attachment')
     provider_id = fields.Char('Provider ID', readonly=True)
+    provider_url = fields.Char('Provider URL', readonly=True)
     status = fields.Selection([
         ('issued', 'Issued'),
         ('ready', 'Ready'),
@@ -216,6 +220,11 @@ class Signature(Workflow, ModelSQL, ModelView):
             conf['provider'] + '_get_provider_id_from_response')(response)
 
     @classmethod
+    def get_provider_url_from_response(cls, conf, response):
+        return getattr(cls,
+            conf['provider'] + '_get_provider_url_from_response')(response)
+
+    @classmethod
     def format_url(cls, url, from_object):
         return url
 
@@ -242,8 +251,8 @@ class Signature(Workflow, ModelSQL, ModelView):
         return conf, credential
 
     @classmethod
-    def get_conf(cls, credential=None, config=None, attachment=None,
-            from_object=None):
+    def get_conf(cls, config=None, attachment=None, from_object=None):
+        credential = config.credential if config else None
         res, credential = cls.get_authentification(credential)
         provider = res['provider']
         if not config:
@@ -280,9 +289,8 @@ class Signature(Workflow, ModelSQL, ModelView):
 
     @classmethod
     def request_transaction(cls, report, attachment, from_object=None,
-            credential=None, config=None, ignore_manual=True):
-        conf, credential = cls.get_conf(credential, config, attachment,
-            from_object)
+            config=None, ignore_manual=True):
+        conf, credential = cls.get_conf(config, attachment, from_object)
         if ignore_manual and conf['manual']:
             return
         signature = cls()
@@ -290,6 +298,8 @@ class Signature(Workflow, ModelSQL, ModelView):
         method = 'init_signature'
         response = cls.call_provider(signature, conf, method, data)
         signature.provider_id = cls.get_provider_id_from_response(conf,
+            response)
+        signature.provider_url = cls.get_provider_url_from_response(conf,
             response)
         signature.status = 'issued'
         signature.provider_credential = credential
@@ -380,8 +390,8 @@ class SignatureConfiguration(ModelSQL, ModelView):
 
     __name__ = 'document.signature.configuration'
 
-    company = fields.Many2One('company.company', 'Company', required=True,
-        ondelete="RESTRICT")
+    credential = fields.Many2One('document.signature.credential', 'Credential',
+        required=True, ondelete='CASCADE')
     profile = fields.Char('Profile')
     level = fields.Selection([
             ('simple', 'Simple'),
@@ -406,6 +416,25 @@ class SignatureConfiguration(ModelSQL, ModelView):
     manual = fields.Boolean('Manual',
         help='If set the electronic process will not be triggered '
         'automatically when the attachment is created')
+
+    @classmethod
+    def __register__(cls, module_name):
+        TableHandler = backend.get('TableHandler')
+        configuration_h = TableHandler(cls)
+        Credential = Pool().get('document.signature.configuration')
+        super().__register__(module_name)
+        if not configuration_h.column_exist('company'):
+            return
+        # Migration from coog 2.6 Link configuration to credential
+        table = cls.__table__()
+        credential = Credential.__table__()
+        cursor = Transaction().connection.cursor()
+        cursor.execute(*credential.select(credential.id))
+        credential_id = cursor.fetchone()[0]
+        cursor.execute(*table.update(
+                columns=[table.credential],
+                values=[credential_id]))
+        configuration_h.drop_column('company')
 
     @staticmethod
     def default_company():

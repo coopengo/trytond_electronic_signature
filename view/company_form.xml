@@ -5,7 +5,6 @@ this repository contains the full copyright notices and license terms. -->
     <xpath expr="/form/notebook" position="inside">
         <page string="Electronic Signature" id="e-signature">
             <field name="signature_credentials" colspan="4"/>
-            <field name="signature_configurations" colspan="4"/>
         </page>
     </xpath>
 </data>
