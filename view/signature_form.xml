@@ -9,6 +9,8 @@ this repository contains the full copyright notices and license terms. -->
     <field name="provider_id"/>
     <label name="status"/>
     <field name="status"/>
+    <label name="provider_url"/>
+    <field name="provider_url"/>
     <button string="Update Info" name="update_transaction_info" colspan="4"/>
     <field name="logs" colspan="4"/>
 </form>

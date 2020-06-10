@@ -13,5 +13,3 @@ class Company(metaclass=PoolMeta):
 
     signature_credentials = fields.One2Many('document.signature.credential',
         'company', 'Credentials')
-    signature_configurations = fields.One2Many(
-        'document.signature.configuration', 'company', 'Configurations')

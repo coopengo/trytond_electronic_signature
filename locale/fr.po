@@ -2,10 +2,6 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
-msgctxt "field:company.company,signature_configurations:"
-msgid "Configurations"
-msgstr "Configurations"
-
 msgctxt "field:company.company,signature_credentials:"
 msgid "Credentials"
 msgstr "Authentifications"
@@ -37,6 +33,10 @@ msgstr "Authentification du fournisseur"
 msgctxt "field:document.signature,provider_id:"
 msgid "Provider ID"
 msgstr "ID Fournisseur"
+
+msgctxt "field:document.signature,provider_url:"
+msgid "Provider URL"
+msgstr "URL Fournisseur"
 
 msgctxt "field:document.signature,rec_name:"
 msgid "Record Name"
@@ -92,9 +92,9 @@ msgctxt "field:document.signature,write_uid:"
 msgid "Write User"
 msgstr "Modifié par"
 
-msgctxt "field:document.signature.configuration,company:"
-msgid "Company"
-msgstr "Société"
+msgctxt "field:document.signature.configuration,credential:"
+msgid "Credential"
+msgstr "Authentification"
 
 msgctxt "field:document.signature.configuration,create_date:"
 msgid "Create Date"
@@ -163,6 +163,10 @@ msgstr "Mode d'authentification"
 msgctxt "field:document.signature.credential,company:"
 msgid "Company"
 msgstr "Société"
+
+msgctxt "field:document.signature.credential,configurations:"
+msgid "Configurations"
+msgstr "Configurations"
 
 msgctxt "field:document.signature.credential,create_date:"
 msgid "Create Date"

@@ -66,16 +66,14 @@ class Attachment(metaclass=PoolMeta):
         cls.save(attachments)
 
     def create_new_signature(self, report=None, from_object=None,
-            credential=None, config=None, ignore_manual=True):
+            config=None, ignore_manual=True):
         Signature = Pool().get('document.signature')
         signatures = list(getattr(self, 'signatures', []))
         report = self.get_struct_for_signature(report)
         if report:
-            credential2, config2 = self.get_signature_credential_and_config()
-            credential = credential or credential2
-            config = config or config2
             signature = Signature.request_transaction(report, self,
-                from_object or self.origin, credential, config, ignore_manual)
+                from_object or self.origin,
+                config or self.get_signature_configuration(), ignore_manual)
             if signature:
                 signatures.append(signature)
                 self.signatures = signatures
@@ -98,8 +96,8 @@ class Attachment(metaclass=PoolMeta):
             report['signers'] = [party]
             return report
 
-    def get_signature_credential_and_config(self):
-        return None, None
+    def get_signature_configuration(self):
+        return None
 
     @fields.depends('signatures')
     def on_change_with_can_create_new_signature(self, name=None):
