@@ -437,10 +437,6 @@ class SignatureConfiguration(ModelSQL, ModelView):
         configuration_h.drop_column('company')
 
     @staticmethod
-    def default_company():
-        return Transaction().context.get('company') or None
-
-    @staticmethod
     def default_level():
         return 'simple'
 
