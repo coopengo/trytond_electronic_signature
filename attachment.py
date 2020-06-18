@@ -92,7 +92,7 @@ class Attachment(metaclass=PoolMeta):
                 }
         report['report_name'] = unidecode(report['report_name'])
         party = self.get_party(report)
-        if party and party.email and (party.mobile or party.phone):
+        if party and party.email:
             report['signers'] = [party]
             return report
 

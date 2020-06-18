@@ -1,3 +1,4 @@
+* BUG#16367 Suppression de l'obligation d'avoir un téléphone pour réaliser une signature électronique
 * FEA#14763 Possibilité de découper le procecssus de signature électronique en deux étape
 * OTH#0000 Force la récupération des autorisations pour l'initialisation de la signature si non défini sur le modèle de document
 * FEA#14406 Récupération automatique du document signé
