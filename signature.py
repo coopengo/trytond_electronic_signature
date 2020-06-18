@@ -110,7 +110,9 @@ class Signature(Workflow, ModelSQL, ModelView):
         cls._buttons.update({
                 'update_transaction_info': {
                     'invisible': Not(In(Eval('status'),
-                            ['', 'issued', 'ready', 'pending_validation']))}
+                            ['', 'issued', 'ready', 'pending_validation']))},
+                'relaunch_transaction': {
+                    'invisible': Eval('status') != 'ready'},
                 })
 
     @classmethod
@@ -371,6 +373,14 @@ class Signature(Workflow, ModelSQL, ModelView):
                 signature.provider_id)
             signature.update_status(cls.get_status_from_response(
                     conf['provider'], response))
+
+    @classmethod
+    @ModelView.button
+    def relaunch_transaction(cls, signatures):
+        for signature in signatures:
+            conf, _ = cls.get_authentification(signature.provider_credential)
+            cls.call_provider(signature, conf, 'relaunch',
+                signature.provider_id)
 
     @classmethod
     def get_content_from_response(cls, provider, response):
