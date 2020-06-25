@@ -337,6 +337,10 @@ msgid "Electronic Signature"
 msgstr "Signature électronique"
 
 msgctxt "view:document.signature:"
+msgid "Relaunch"
+msgstr "Relancer"
+
+msgctxt "view:document.signature:"
 msgid "Update Info"
 msgstr "Mise à jour des informations"
 
