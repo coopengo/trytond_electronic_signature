@@ -47,5 +47,9 @@ this repository contains the full copyright notices and license terms. -->
             <field name="name">update_transaction_info</field>
             <field name="model" search="[('model', '=', 'document.signature')]"/>
         </record>
+        <record model="ir.model.button" id="relaunch_transaction">
+            <field name="name">relaunch_transaction</field>
+            <field name="model" search="[('model', '=', 'document.signature')]"/>
+        </record>
     </data>
 </tryton>
