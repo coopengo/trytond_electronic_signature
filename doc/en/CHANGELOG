@@ -1,3 +1,4 @@
+* OTH#00000 Fix an error when migratin to separate credentials
 * BUG#16367 Remove phone number obligation for electronic signature
 * FEA#14763 Allow to call electronic signature provider in two passes
 * OTH#0000 Retrieve credential if not defined on document desc.
