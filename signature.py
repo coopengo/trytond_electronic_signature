@@ -433,18 +433,22 @@ class SignatureConfiguration(ModelSQL, ModelView):
         configuration_h = TableHandler(cls)
         Credential = Pool().get('document.signature.configuration')
         super().__register__(module_name)
-        if not configuration_h.column_exist('company'):
-            return
+
         # Migration from coog 2.6 Link configuration to credential
-        table = cls.__table__()
-        credential = Credential.__table__()
-        cursor = Transaction().connection.cursor()
-        cursor.execute(*credential.select(credential.id))
-        credential_id = cursor.fetchone()[0]
-        cursor.execute(*table.update(
-                columns=[table.credential],
-                values=[credential_id]))
-        configuration_h.drop_column('company')
+        if configuration_h.column_exist('company'):
+            table = cls.__table__()
+            credential = Credential.__table__()
+            cursor = Transaction().connection.cursor()
+            cursor.execute(*credential.select(credential.id))
+            result = cursor.fetchone()
+
+            if result is not None:
+                credential_id = result[0]
+                cursor.execute(*table.update(
+                        columns=[table.credential],
+                        values=[credential_id]))
+
+            configuration_h.drop_column('company')
 
     @staticmethod
     def default_level():
