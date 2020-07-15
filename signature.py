@@ -429,8 +429,7 @@ class SignatureConfiguration(ModelSQL, ModelView):
 
     @classmethod
     def __register__(cls, module_name):
-        TableHandler = backend.get('TableHandler')
-        configuration_h = TableHandler(cls)
+        configuration_h = backend.TableHandler(cls)
         Credential = Pool().get('document.signature.configuration')
         super().__register__(module_name)
 
