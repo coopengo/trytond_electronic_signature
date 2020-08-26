@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <tryton>
-    <data group="1">
+    <data>
         <record model="ir.message" id="msg_unknown_signature">
             <field name="text">Could not find signature %(provider_id)s for %(provider)s</field>
         </record>
