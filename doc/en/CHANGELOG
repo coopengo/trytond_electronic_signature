@@ -1,4 +1,5 @@
-* OTH#00000 Fix an error when migratin to separate credentials
+* OTH#00000 Do not crash when trying to retrieve default configuration if none is set on document
+* OTH#00000 Fix an error when migrating to separate credentials
 * FEA#16429 Allow to relaunch electronic signature process
 * BUG#16367 Remove phone number obligation for electronic signature
 * FEA#14763 Allow to call electronic signature provider in two passes
