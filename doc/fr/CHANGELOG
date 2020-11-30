@@ -1,4 +1,5 @@
-* OTH#00000 Correction d'une anomalie dans le processus de migration des identifiants
+* OTH#00000 Correction d'un plantage quand on retrouve la configuration par défaut quand aucune n'est renseignée sur le type de document
+* OTH#00000 Correction d'une anomalie dans le processus de migration des accréditations
 * FEA#16429 Possibilité de relancer le processus de signature électronique
 * BUG#16367 Suppression de l'obligation d'avoir un téléphone pour réaliser une signature électronique
 * FEA#14763 Possibilité de découper le procecssus de signature électronique en deux étape
