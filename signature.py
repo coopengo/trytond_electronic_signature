@@ -260,8 +260,10 @@ class Signature(Workflow, ModelSQL, ModelView):
         if not config:
             Company = Pool().get('company.company')
             company = Company(Transaction().context.get('company'))
-            if company.signature_configurations:
-                config = company.signature_configurations[0]
+            if (company.signature_credentials
+                    and company.signature_credentials[0].configurations):
+                credential = company.signature_credentials[0]
+                config = credential.signature_configurations[0]
         res['urls'] = {}
         for call in ['success', 'fail', 'cancel']:
             if credential and config and getattr(
