@@ -123,8 +123,7 @@ class Signature(Workflow, ModelSQL, ModelView):
     @classmethod
     @Workflow.transition('expired')
     def set_status_expired(cls, signatures):
-        for signature in signatures:
-            signature.notify_signature_failed()
+        pass
 
     @classmethod
     @Workflow.transition('canceled')
@@ -344,8 +343,13 @@ class Signature(Workflow, ModelSQL, ModelView):
         if self.status != new_status:
             # the transition writes the status on the signature
             getattr(self.__class__, 'set_status_%s' % new_status)([self])
+
             # now that the status is updated in database, we can notify
-            notify_method = getattr(self, 'notify_signature_%s' % new_status)()
+            if new_status in ('expired', 'canceled'):
+                event = 'failed'
+            else:
+                event = new_status
+            notify_method = getattr(self, 'notify_signature_%s' % event)()
             if notify_method:
                 notify_method()
 
