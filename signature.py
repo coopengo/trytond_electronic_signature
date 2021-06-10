@@ -123,27 +123,22 @@ class Signature(Workflow, ModelSQL, ModelView):
     @classmethod
     @Workflow.transition('expired')
     def set_status_expired(cls, signatures):
-        for signature in signatures:
-            signature.notify_signature_failed()
+        pass
 
     @classmethod
     @Workflow.transition('canceled')
     def set_status_canceled(cls, signatures):
-        for signature in signatures:
-            signature.notify_signature_failed()
+        pass
 
     @classmethod
     @Workflow.transition('failed')
     def set_status_failed(cls, signatures):
-        for signature in signatures:
-            signature.notify_signature_failed()
+        pass
 
     @classmethod
     @Workflow.transition('completed')
     def set_status_completed(cls, signatures):
-        for signature in signatures:
-            signature.status = 'completed'
-            signature.notify_signature_completed()
+        pass
 
     @classmethod
     @Workflow.transition('pending_validation')
@@ -346,8 +341,14 @@ class Signature(Workflow, ModelSQL, ModelView):
                     if self.provider_credential else '',
                     status=new_status))
         if self.status != new_status:
+            # the transition writes the status on the signature
             getattr(self.__class__, 'set_status_%s' % new_status)([self])
-            self.save()
+
+            # now that the status is updated in database, we can notify
+            if new_status in ('expired', 'canceled'):
+                self.notify_signature_failed()
+            elif new_status == 'completed':
+                self.notify_signature_completed()
 
     def append_log(self, conf, method, data, response):
         if not hasattr(self, 'logs') or not self.logs:
