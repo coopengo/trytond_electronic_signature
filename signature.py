@@ -346,12 +346,9 @@ class Signature(Workflow, ModelSQL, ModelView):
 
             # now that the status is updated in database, we can notify
             if new_status in ('expired', 'canceled'):
-                event = 'failed'
-            else:
-                event = new_status
-            notify_method = getattr(self, 'notify_signature_%s' % event)()
-            if notify_method:
-                notify_method()
+                self.notify_signature_failed()
+            elif new_status == 'completed':
+                self.notify_signature_completed()
 
     def append_log(self, conf, method, data, response):
         if not hasattr(self, 'logs') or not self.logs:
