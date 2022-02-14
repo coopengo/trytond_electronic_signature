@@ -5,10 +5,12 @@ this repository contains the full copyright notices and license terms. -->
     <xpath expr="/form/notebook" position="inside">
         <page id="e-signature" string="Electronic Signature">
             <field name="signatures" colspan="4" mode="form,tree"/>
-            <button string="Sign" name="init_new_signature_process" colspan="4"/>
+            <button string="Bypass Digital Process" name="manually_create_forced_signature" colspan="2"/>
+            <button string="Sign" name="init_new_signature_process" colspan="2"/>
             <newline/>
             <field name="can_create_new_signature" invisible="1"/>
             <field name="can_see_signatures" invisible="1"/>
+            <field name="can_force_signature" invisible="1"/>
             <newline/>
         </page>
     </xpath>
