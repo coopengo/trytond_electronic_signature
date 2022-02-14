@@ -10,18 +10,6 @@ msgctxt "field:document.signature,attachment:"
 msgid "Attachment"
 msgstr "Pièce jointe"
 
-msgctxt "field:document.signature,create_date:"
-msgid "Create Date"
-msgstr "Date de Création"
-
-msgctxt "field:document.signature,create_uid:"
-msgid "Create User"
-msgstr "Créé par"
-
-msgctxt "field:document.signature,id:"
-msgid "ID"
-msgstr "Identifiant"
-
 msgctxt "field:document.signature,logs:"
 msgid "Logs"
 msgstr "Traces"
@@ -38,79 +26,17 @@ msgctxt "field:document.signature,provider_url:"
 msgid "Provider URL"
 msgstr "URL Fournisseur"
 
-msgctxt "field:document.signature,rec_name:"
-msgid "Record Name"
-msgstr "Nom de l'enregistrement"
-
 msgctxt "field:document.signature,status:"
 msgid "Status"
 msgstr "Statut"
-
-msgctxt "model:ir.message,text:msg_unauthorized_transition"
-msgid "Could not change status to %(status)s for signature %(provider_id)s of %(provider)s"
-msgstr ""
-"Impossible de changer le statut à %(status)s pour la signature %(provider_id)s de %(provider)s"
-
-msgctxt "model:ir.message,text:msg_unknown_signature"
-msgid "Could not find signature %(provider_id)s for %(provider)s"
-msgstr ""
-"Impossible de retrouver la signature %(provider_id)s pour %(provider)s"
-
-msgctxt "selection:document.signature,status:"
-msgid "Canceled"
-msgstr "Annulée"
-
-msgctxt "selection:document.signature,status:"
-msgid "Pending Validation"
-msgstr "En attente de validation"
-
-msgctxt "selection:document.signature,status:"
-msgid "Completed"
-msgstr "Réussie"
-
-msgctxt "selection:document.signature,status:"
-msgid "Expired"
-msgstr "Expirée"
-
-msgctxt "selection:document.signature,status:"
-msgid "Failed"
-msgstr "Rejetée"
-
-msgctxt "selection:document.signature,status:"
-msgid "Issued"
-msgstr "Lancée"
-
-msgctxt "selection:document.signature,status:"
-msgid "Ready"
-msgstr "Prête"
-
-msgctxt "field:document.signature,write_date:"
-msgid "Write Date"
-msgstr "Modifié par"
-
-msgctxt "field:document.signature,write_uid:"
-msgid "Write User"
-msgstr "Modifié par"
 
 msgctxt "field:document.signature.configuration,credential:"
 msgid "Credential"
 msgstr "Authentification"
 
-msgctxt "field:document.signature.configuration,create_date:"
-msgid "Create Date"
-msgstr "Date de Création"
-
-msgctxt "field:document.signature.configuration,create_uid:"
-msgid "Create User"
-msgstr "Créé par"
-
 msgctxt "field:document.signature.configuration,handwritten_signature:"
 msgid "Handwritten Signature"
 msgstr "Signature manuscrite"
-
-msgctxt "field:document.signature.configuration,id:"
-msgid "ID"
-msgstr "Identifiant"
 
 msgctxt "field:document.signature.configuration,level:"
 msgid "Level"
@@ -123,10 +49,6 @@ msgstr "Manuel"
 msgctxt "field:document.signature.configuration,profile:"
 msgid "Profile"
 msgstr "Profile"
-
-msgctxt "field:document.signature.configuration,rec_name:"
-msgid "Record Name"
-msgstr "Nom de l'enregistrement"
 
 msgctxt "field:document.signature.configuration,send_email_to_sign:"
 msgid "Send an e-mail to sign"
@@ -148,14 +70,6 @@ msgctxt "field:document.signature.configuration,suffix_url_success:"
 msgid "Suffix URL Success"
 msgstr "Suffixe de l'URL de succès"
 
-msgctxt "field:document.signature.configuration,write_date:"
-msgid "Write Date"
-msgstr "Modifié par"
-
-msgctxt "field:document.signature.configuration,write_uid:"
-msgid "Write User"
-msgstr "Modifié par"
-
 msgctxt "field:document.signature.credential,auth_mode:"
 msgid "Authentication Mode"
 msgstr "Mode d'authentification"
@@ -168,21 +82,9 @@ msgctxt "field:document.signature.credential,configurations:"
 msgid "Configurations"
 msgstr "Configurations"
 
-msgctxt "field:document.signature.credential,create_date:"
-msgid "Create Date"
-msgstr "Date de Création"
-
-msgctxt "field:document.signature.credential,create_uid:"
-msgid "Create User"
-msgstr "Créé par"
-
 msgctxt "field:document.signature.credential,displayed_password:"
 msgid "Password"
 msgstr "Mot de passe"
-
-msgctxt "field:document.signature.credential,id:"
-msgid "ID"
-msgstr "Identifiant"
 
 msgctxt "field:document.signature.credential,log_execution:"
 msgid "Log Execution"
@@ -212,21 +114,17 @@ msgctxt "field:document.signature.credential,provider_url:"
 msgid "Provider URL"
 msgstr "URL du fournisseur"
 
-msgctxt "field:document.signature.credential,rec_name:"
-msgid "Record Name"
-msgstr "Nom de l'enregistrement"
-
 msgctxt "field:document.signature.credential,username:"
 msgid "User Name"
 msgstr "Nom de l'utilisateur"
 
-msgctxt "field:document.signature.credential,write_date:"
-msgid "Write Date"
-msgstr "Modifié par"
+msgctxt "field:ir.attachment,can_create_new_signature:"
+msgid "Can Create New Signature"
+msgstr "Peut créer une nouvelle signature"
 
-msgctxt "field:document.signature.credential,write_uid:"
-msgid "Write User"
-msgstr "Modifié par"
+msgctxt "field:ir.attachment,can_see_signatures:"
+msgid "Can See Signatures"
+msgstr "Peut voir les signatures"
 
 msgctxt "field:ir.attachment,signature:"
 msgid "Signature"
@@ -236,9 +134,13 @@ msgctxt "field:ir.attachment,signatures:"
 msgid "Signatures"
 msgstr "Signatures"
 
-msgctxt "help:document.signature.configuration,description:"
-msgid "Textual description of the meta data for the request"
-msgstr "Description textuelle des meta data de la demande"
+msgctxt "help:document.signature.configuration,manual:"
+msgid ""
+"If set the electronic process will not be triggered automatically when the "
+"attachment is created"
+msgstr ""
+"Si cochée, le processus de signature électronique ne se déclenchera pas "
+"automatiquement à la création de la pièce jointe"
 
 msgctxt "help:document.signature.configuration,send_email_to_sign:"
 msgid "Send an email to first signer to proceed with the electronic signature"
@@ -253,12 +155,6 @@ msgid ""
 msgstr ""
 "Envoyer un mail à chaque signataire avec les documents signés à la fin du "
 "processus"
-
-msgctxt "help:document.signature.configuration,manual:"
-msgid ""
-"If set the electronic process will not be triggered automatically when the attachment is created"
-msgstr ""
-"Si cochée, le processus de signature électronique ne se déclenchera pas automatiquement à la création de la pièce jointe"
 
 msgctxt "help:document.signature.credential,log_execution:"
 msgid "Set temporary the value to True to debug the call"
@@ -276,9 +172,30 @@ msgctxt "model:document.signature.credential,name:"
 msgid "Signature Credential"
 msgstr "Authentification du service de signature"
 
+msgctxt "model:ir.message,text:msg_unauthorized_transition"
+msgid ""
+"Could not change status to %(status)s for signature %(provider_id)s of "
+"%(provider)s"
+msgstr ""
+"Impossible de changer le statut à %(status)s pour la signature "
+"%(provider_id)s de %(provider)s"
+
+msgctxt "model:ir.message,text:msg_unknown_signature"
+msgid "Could not find signature %(provider_id)s for %(provider)s"
+msgstr ""
+"Impossible de retrouver la signature %(provider_id)s pour %(provider)s"
+
 msgctxt "selection:document.signature,status:"
 msgid "Canceled"
 msgstr "Annulée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Canceled"
+msgstr "Annulée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Completed"
+msgstr "Réussie"
 
 msgctxt "selection:document.signature,status:"
 msgid "Completed"
@@ -289,12 +206,36 @@ msgid "Expired"
 msgstr "Expirée"
 
 msgctxt "selection:document.signature,status:"
+msgid "Expired"
+msgstr "Expirée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Failed"
+msgstr "Rejetée"
+
+msgctxt "selection:document.signature,status:"
 msgid "Failed"
 msgstr "Rejetée"
 
 msgctxt "selection:document.signature,status:"
 msgid "Issued"
 msgstr "Lancée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Issued"
+msgstr "Lancée"
+
+msgctxt "selection:document.signature,status:"
+msgid "Manually Forced"
+msgstr "Forcée manuellement"
+
+msgctxt "selection:document.signature,status:"
+msgid "Pending Validation"
+msgstr "En attente de validation"
+
+msgctxt "selection:document.signature,status:"
+msgid "Ready"
+msgstr "Prête"
 
 msgctxt "selection:document.signature,status:"
 msgid "Ready"
@@ -343,6 +284,10 @@ msgstr "Relancer"
 msgctxt "view:document.signature:"
 msgid "Update Info"
 msgstr "Mise à jour des informations"
+
+msgctxt "view:ir.attachment:"
+msgid "Bypass Digital Process"
+msgstr "Contourner le processus électronique"
 
 msgctxt "view:ir.attachment:"
 msgid "Electronic Signature"

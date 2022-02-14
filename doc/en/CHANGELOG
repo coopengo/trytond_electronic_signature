@@ -1,3 +1,4 @@
+* FEA#21484 Allow to bypass electronic signature process
 * OTH#00000 Do not crash when trying to retrieve default configuration if none is set on document
 * OTH#00000 Fix an error when migrating to separate credentials
 * FEA#16429 Allow to relaunch electronic signature process

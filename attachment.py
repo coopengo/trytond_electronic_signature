@@ -25,13 +25,18 @@ class Attachment(metaclass=PoolMeta):
     can_see_signatures = fields.Function(
         fields.Boolean('Can See Signatures'),
         'on_change_with_can_see_signatures')
+    can_force_signature = fields.Function(
+        fields.Boolean('Can Force Signature'),
+        'on_change_with_can_force_signature')
 
     @classmethod
     def __setup__(cls):
         super(Attachment, cls).__setup__()
         cls._buttons.update({
                 'init_new_signature_process': {
-                    'invisible': ~Eval('can_create_new_signature')}
+                    'invisible': ~Eval('can_create_new_signature')},
+                'manually_create_forced_signature': {
+                    'invisible': ~Eval('can_force_signature')}
                 })
 
     @classmethod
@@ -49,7 +54,8 @@ class Attachment(metaclass=PoolMeta):
                 if s.status == 'completed'][-1].id
         else:
             pendings = [s for s in self.signatures if s.status not in [
-                    'failed', 'expired', 'canceled', 'completed']]
+                    'failed', 'expired', 'canceled', 'completed',
+                    'manually_forced']]
             if pendings:
                 return pendings[-1].id
             return self.signatures[-1].id if self.signatures else None
@@ -77,6 +83,20 @@ class Attachment(metaclass=PoolMeta):
             if signature:
                 signatures.append(signature)
                 self.signatures = signatures
+
+    @classmethod
+    @ModelView.button
+    def manually_create_forced_signature(cls, attachments):
+        Signature = Pool().get('document.signature')
+        signatures_to_save = []
+        for attachment in attachments:
+            if not attachment.signatures:
+                signature = Signature(status='issued')
+                attachment.signature = signature
+                attachment.signatures = [signature]
+                signatures_to_save.append(signature)
+        Signature.save(signatures_to_save)
+        Signature.manually_force([a.signature for a in attachments])
 
     def get_party(self, report=None):
         if report and 'party' in report:
@@ -113,6 +133,11 @@ class Attachment(metaclass=PoolMeta):
         elif self.signature.status in ['expired', 'canceled', 'failed']:
             # Process failed, we'll start a new one
             return True
+
+    @fields.depends('signatures')
+    def on_change_with_can_force_signature(self, name=None):
+        return not self.signatures or self.signature.status not in [
+            'completed', 'manually_forced']
 
     def on_change_with_can_see_signatures(self, name=None):
         return True
