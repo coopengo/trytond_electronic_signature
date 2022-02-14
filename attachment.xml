@@ -7,5 +7,9 @@ this repository contains the full copyright notices and license terms. -->
             <field name="name">init_new_signature_process</field>
             <field name="model" search="[('model', '=', 'ir.attachment')]"/>
         </record>
+        <record model="ir.model.button" id="manually_create_forced_signature">
+            <field name="name">manually_create_forced_signature</field>
+            <field name="model" search="[('model', '=', 'ir.attachment')]"/>
+        </record>
     </data>
 </tryton>

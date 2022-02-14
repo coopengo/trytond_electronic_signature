@@ -83,9 +83,17 @@ class Signature(Workflow, ModelSQL, ModelView):
         ('canceled', 'Canceled'),
         ('failed', 'Failed'),
         ('completed', 'Completed'),
+        ('manually_forced', 'Manually Forced'),
         ('pending_validation', 'Pending Validation'),
         ], 'Status', readonly=True)
     logs = fields.Text('Logs', readonly=True)
+    forced_by = fields.Function(
+        fields.Many2One('res.user', 'Forced By',
+            help='Document was not digitally signed, but manually forced by '
+            'this user',
+            states={'invisible': Eval('status') != 'manually_forced'},
+            depends=['status']),
+        'get_forced_by')
 
     @classmethod
     def __setup__(cls):
@@ -106,6 +114,12 @@ class Signature(Workflow, ModelSQL, ModelView):
                 ('pending_validation', 'canceled'),
                 ('pending_validation', 'failed'),
                 ('pending_validation', 'completed'),
+                ('pending_validation', 'manually_forced'),
+                ('issued', 'manually_forced'),
+                ('ready', 'manually_forced'),
+                ('expired', 'manually_forced'),
+                ('canceled', 'manually_forced'),
+                ('failed', 'manually_forced'),
                 ))
         cls._buttons.update({
                 'update_transaction_info': {
@@ -143,6 +157,11 @@ class Signature(Workflow, ModelSQL, ModelView):
     @classmethod
     @Workflow.transition('pending_validation')
     def set_status_pending_validation(cls, signatures):
+        pass
+
+    @classmethod
+    @Workflow.transition('manually_forced')
+    def set_status_manually_forced(cls, signatures):
         pass
 
     @classmethod
@@ -308,7 +327,11 @@ class Signature(Workflow, ModelSQL, ModelView):
         self.attachment.update_with_signed_document(self)
 
     def notify_signature_failed(self):
-        # TODO Trigger an event
+        # Triggers an event in sub modules
+        pass
+
+    def notify_signature_manually_forced(self):
+        # Triggers an event in sub modules
         pass
 
     @classmethod
@@ -349,6 +372,8 @@ class Signature(Workflow, ModelSQL, ModelView):
                 self.notify_signature_failed()
             elif new_status == 'completed':
                 self.notify_signature_completed()
+            elif new_status == 'manually_forced':
+                self.notify_signature_manually_forced()
 
     def append_log(self, conf, method, data, response):
         if not hasattr(self, 'logs') or not self.logs:
@@ -386,6 +411,12 @@ class Signature(Workflow, ModelSQL, ModelView):
                 signature.provider_id)
 
     @classmethod
+    @ModelView.button
+    def manually_force(cls, signatures):
+        for signature in signatures:
+            signature.update_status('manually_forced')
+
+    @classmethod
     def get_content_from_response(cls, provider, response):
         return getattr(cls, provider + '_get_content_from_response')(
             response)
@@ -396,6 +427,9 @@ class Signature(Workflow, ModelSQL, ModelView):
             'get_signed_document', self.provider_id)
         return self.__class__.get_content_from_response(conf['provider'],
             response)
+
+    def get_forced_by(self, name):
+        return self.write_uid.id if self.write_uid else self.create_uid.id
 
 
 class SignatureConfiguration(ModelSQL, ModelView):
