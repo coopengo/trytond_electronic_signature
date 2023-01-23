@@ -1,3 +1,4 @@
+* BUG#PROCK-127 Add a timeout for calls to signature service
 * OTH#00000 Update tests to Tryton 6.4
 * FEA#21484 Allow to bypass electronic signature process
 * OTH#00000 Do not crash when trying to retrieve default configuration if none is set on document
