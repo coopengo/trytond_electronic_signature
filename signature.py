@@ -192,7 +192,7 @@ class Signature(Workflow, ModelSQL, ModelView):
                 auth=cls.auth(conf), timeout=conf['timeout'], data=all_data)
         except requests.ReadTimeout:
             raise TimeoutException(
-                gettext("The signature service is not available"))
+                gettext("electronic_signature.msg_service_timeout"))
         if req.status_code > 299:
             raise Exception(req.content)
         response, _ = xmlrpc.client.loads(req.content)
