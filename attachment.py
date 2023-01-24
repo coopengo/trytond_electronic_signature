@@ -67,6 +67,7 @@ class Attachment(metaclass=PoolMeta):
     @classmethod
     @ModelView.button
     def init_new_signature_process(cls, attachments):
+        breakpoint()
         for attachment in attachments:
             attachment.create_new_signature(ignore_manual=False)
         cls.save(attachments)

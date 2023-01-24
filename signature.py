@@ -9,6 +9,7 @@ from unidecode import unidecode
 from trytond import backend
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
+from trytond.exceptions import TimeoutException
 from trytond.model import ModelSQL, ModelView, fields, Workflow
 from trytond.pyson import Eval, Not, In
 from trytond.pool import Pool
@@ -186,8 +187,12 @@ class Signature(Workflow, ModelSQL, ModelView):
         assert url
         provider_method = cls.get_methods(conf)[method]
         all_data = xmlrpc.client.dumps((data,), provider_method)
-        req = requests.post(url, headers=cls.headers(conf['provider']),
-            auth=cls.auth(conf), timeout=conf['timeout'], data=all_data)
+        try:
+            req = requests.post(url, headers=cls.headers(conf['provider']),
+                auth=cls.auth(conf), timeout=conf['timeout'], data=all_data)
+        except requests.ReadTimeout:
+            raise TimeoutException(
+                gettext("The signature service is not available"))
         if req.status_code > 299:
             raise Exception(req.content)
         response, _ = xmlrpc.client.loads(req.content)
@@ -464,8 +469,9 @@ class SignatureConfiguration(ModelSQL, ModelView):
     manual = fields.Boolean('Manual',
         help='If set the electronic process will not be triggered '
         'automatically when the attachment is created')
-    timeout = fields.Integer('Signature service timeout', required=True,
-        help='Time after which the signature requests are cancelled')
+    timeout = fields.Integer('Signature service timeout (in seconds)', required=True,
+        help='Time after which the signature service requests fail with an '
+        'error')
 
     @classmethod
     def __register__(cls, module_name):
