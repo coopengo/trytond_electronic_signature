@@ -296,6 +296,10 @@ msgctxt "selection:document.signature.credential,auth_mode:"
 msgid "Basic"
 msgstr "Basique"
 
+msgctxt "selection:document.signature.credential,provider:"
+msgid ""
+msgstr " "
+
 msgctxt "view:company.company:"
 msgid "Electronic Signature"
 msgstr "Signature électronique"
