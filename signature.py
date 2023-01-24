@@ -190,7 +190,7 @@ class Signature(Workflow, ModelSQL, ModelView):
         try:
             req = requests.post(url, headers=cls.headers(conf['provider']),
                 auth=cls.auth(conf), timeout=conf['timeout'], data=all_data)
-        except requests.ReadTimeout:
+        except requests.Timeout:
             raise TimeoutException(
                 gettext("electronic_signature.msg_service_timeout"))
         if req.status_code > 299:
