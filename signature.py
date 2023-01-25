@@ -468,16 +468,15 @@ class SignatureConfiguration(ModelSQL, ModelView):
     manual = fields.Boolean('Manual',
         help='If set the electronic process will not be triggered '
         'automatically when the attachment is created')
-    timeout = fields.Integer('Signature service timeout (in seconds)', required=True,
+    timeout = fields.Integer('Signature service timeout (in seconds)',
+        required=True,
         help='Time after which the signature service requests fail with an '
         'error')
 
     @classmethod
     def __register__(cls, module_name):
         configuration_h = backend.TableHandler(cls)
-        update_timeout = False
-        if not configuration_h.column_exist('timeout'):
-            update_timeout = True
+        update_timeout = not configuration_h.column_exist('timeout')
         Credential = Pool().get('document.signature.configuration')
         super().__register__(module_name)
 
