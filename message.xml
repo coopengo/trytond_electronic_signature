@@ -7,5 +7,8 @@
         <record model="ir.message" id="msg_unauthorized_transition">
             <field name="text">Could not change status to %(status)s for signature %(provider_id)s of %(provider)s</field>
         </record>
+        <record model="ir.message" id="msg_service_timeout">
+            <field name="text">The signature service is not available</field>
+        </record>
     </data>
 </tryton>
