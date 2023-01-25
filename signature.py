@@ -9,6 +9,7 @@ from unidecode import unidecode
 from trytond import backend
 from trytond.i18n import gettext
 from trytond.config import config as config_parser
+from trytond.exceptions import TimeoutException
 from trytond.model import ModelSQL, ModelView, fields, Workflow
 from trytond.pyson import Eval, Not, In
 from trytond.pool import Pool
@@ -186,8 +187,11 @@ class Signature(Workflow, ModelSQL, ModelView):
         assert url
         provider_method = cls.get_methods(conf)[method]
         all_data = xmlrpc.client.dumps((data,), provider_method)
-        req = requests.post(url, headers=cls.headers(conf['provider']),
-            auth=cls.auth(conf), data=all_data)
+        try:
+            req = requests.post(url, headers=cls.headers(conf['provider']),
+                auth=cls.auth(conf), timeout=conf['timeout'], data=all_data)
+        except requests.Timeout:
+            raise TimeoutException()
         if req.status_code > 299:
             raise Exception(req.content)
         response, _ = xmlrpc.client.loads(req.content)
@@ -303,6 +307,7 @@ class Signature(Workflow, ModelSQL, ModelView):
         res['handwritten_signature'] = config.handwritten_signature \
             if config else 'never'
         res['manual'] = config.manual if config else False
+        res['timeout'] = config.timeout if config else 10
         return res, credential
 
     @classmethod
@@ -463,10 +468,15 @@ class SignatureConfiguration(ModelSQL, ModelView):
     manual = fields.Boolean('Manual',
         help='If set the electronic process will not be triggered '
         'automatically when the attachment is created')
+    timeout = fields.Integer('Signature service timeout (in seconds)',
+        required=True,
+        help='Time after which the signature service requests fail with an '
+        'error')
 
     @classmethod
     def __register__(cls, module_name):
         configuration_h = backend.TableHandler(cls)
+        update_timeout = not configuration_h.column_exist('timeout')
         Credential = Pool().get('document.signature.configuration')
         super().__register__(module_name)
 
@@ -485,6 +495,12 @@ class SignatureConfiguration(ModelSQL, ModelView):
                         values=[credential_id]))
 
             configuration_h.drop_column('company')
+        if update_timeout:
+            table = cls.__table__()
+            cursor = Transaction().connection.cursor()
+            cursor.execute(*table.update(
+                    columns=[table.timeout],
+                    values=[cls.default_timeout()]))
 
     @staticmethod
     def default_level():
@@ -497,6 +513,10 @@ class SignatureConfiguration(ModelSQL, ModelView):
     @staticmethod
     def default_send_email_to_sign():
         return True
+
+    @staticmethod
+    def default_timeout():
+        return 10
 
     @staticmethod
     def default_send_signed_docs_by_email():
