@@ -1,3 +1,4 @@
+* BUG#PROCK-127 Ajouter un délai de connexion pour les appels aux services de signature
 * OTH#00000 Mise à jour des tests vers Tryton 6.4
 * FEA#21484 Possibilité de contourner le processus de signature électronique
 * OTH#00000 Correction d'un plantage quand on retrouve la configuration par défaut quand aucune n'est renseignée sur le type de document
