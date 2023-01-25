@@ -24,4 +24,6 @@ this repository contains the full copyright notices and license terms. -->
     <field name="suffix_url_cancel"/>
     <label name="suffix_url_fail"/>
     <field name="suffix_url_fail"/>
+    <label name="timeout"/>
+    <field name="timeout"/>
 </form>
