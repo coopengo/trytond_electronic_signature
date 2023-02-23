@@ -268,10 +268,8 @@ class Signature(Workflow, ModelSQL, ModelView):
         conf['url'] = (credential.provider_url
                 if credential else config_parser.get(provider, 'url'))
         conf['log'] = credential.log_execution if credential else False
-        if credential.configurations:
-            conf['timeout'] = credential.configurations[0].timeout
-        else:
-            conf['timeout'] = 10
+        conf['timeout'] = credential.configurations[0].timeout if \
+            credential.configurations else 10
 
         return conf, credential
 
